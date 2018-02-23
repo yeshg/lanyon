@@ -25,6 +25,7 @@
  * Pagination
  * Reverse layout
  * Themes
+ * Custom Themes
  */
 
 
@@ -46,6 +47,7 @@ html {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  font-family: "PT Serif", Georgia, "Times New Roman", serif;
   font-weight: 400;
   color: #313131;
   letter-spacing: -.025rem;
@@ -537,6 +539,60 @@ a.pagination-item:hover {
   color: #8f5536;
 }
 
+/* Midnight */
+.theme-base-0g .sidebar,
+.theme-base-0g .sidebar-toggle:active,
+.theme-base-0g #sidebar-checkbox:checked ~ .sidebar-toggle {
+  background-color: #181830;
+}
+.theme-base-0g .container a,
+.theme-base-0g .sidebar-toggle,
+.theme-base-0g .related-posts li a:hover {
+  color: #181830;
+}
+
+/*
+ * Custom Themes
+ *
+ * Applied same way as other themes
+ * Based on colors from Colourlovers.com (named appropriately): http://www.colourlovers.com.
+ */
+
+/* Midnight */
+.theme-custom-0 .sidebar,
+.theme-custom-0 .sidebar-toggle:active,
+.theme-custom-0 #sidebar-checkbox:checked ~ .sidebar-toggle {
+  background-color: #181830;
+}
+.theme-custom-0 .container a,
+.theme-custom-0 .sidebar-toggle,
+.theme-custom-0 .related-posts li a:hover {
+  color: #181830;
+}
+
+/* Millennial Blue */
+.theme-custom-1 .sidebar,
+.theme-custom-1 .sidebar-toggle:active,
+.theme-custom-1 #sidebar-checkbox:checked ~ .sidebar-toggle {
+  background-color: #025D8C;
+}
+.theme-custom-1 .container a,
+.theme-custom-1 .sidebar-toggle,
+.theme-custom-1 .related-posts li a:hover {
+  color: #025D8C;
+}
+
+/* Mighty Slate */
+.theme-custom-2 .sidebar,
+.theme-custom-2 .sidebar-toggle:active,
+.theme-custom-2 #sidebar-checkbox:checked ~ .sidebar-toggle {
+  background-color: #556270;
+}
+.theme-custom-2 .container a,
+.theme-custom-2 .sidebar-toggle,
+.theme-custom-2 .related-posts li a:hover {
+  color: #556270;
+}
 
 /*
  * Overlay sidebar
