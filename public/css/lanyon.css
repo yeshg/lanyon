@@ -47,7 +47,6 @@ html {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
-  font-family: "PT Serif", Georgia, "Times New Roman", serif;
   font-weight: 400;
   color: #313131;
   letter-spacing: -.025rem;
@@ -592,6 +591,42 @@ a.pagination-item:hover {
 .theme-custom-2 .sidebar-toggle,
 .theme-custom-2 .related-posts li a:hover {
   color: #556270;
+}
+
+/* Rubber */
+.theme-custom-3 .sidebar,
+.theme-custom-3 .sidebar-toggle:active,
+.theme-custom-3 #sidebar-checkbox:checked ~ .sidebar-toggle {
+  background-color: #262626;
+}
+.theme-custom-3 .container a,
+.theme-custom-3 .sidebar-toggle,
+.theme-custom-3 .related-posts li a:hover {
+  color: #262626;
+}
+
+/* Night Sky */
+.theme-custom-4 .sidebar,
+.theme-custom-4 .sidebar-toggle:active,
+.theme-custom-4 #sidebar-checkbox:checked ~ .sidebar-toggle {
+  background-color: #000030;
+}
+.theme-custom-4 .container a,
+.theme-custom-4 .sidebar-toggle,
+.theme-custom-4 .related-posts li a:hover {
+  color: #000030;
+}
+
+/* Night Sky + Rubber */
+.theme-custom-5 .sidebar,
+.theme-custom-5 .sidebar-toggle:active,
+.theme-custom-5 #sidebar-checkbox:checked ~ .sidebar-toggle {
+  background-color: #181830;
+}
+.theme-custom-5 .container a,
+.theme-custom-5 .sidebar-toggle,
+.theme-custom-5 .related-posts li a:hover {
+  color: #000030;
 }
 
 /*
