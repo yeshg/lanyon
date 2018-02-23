@@ -2,7 +2,7 @@
 #
 # Use of `relative_permalinks` ensures post links from the index work properly.
 permalink:           pretty
-relative_permalinks: true
+#relative_permalinks: true
 
 # Setup
 title:               Lanyon
@@ -20,3 +20,4 @@ author:
 
 # Custom vars
 version:             1.0.0
+excerpt_separator: "\n\n"

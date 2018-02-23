@@ -1,6 +1,9 @@
 ---
 layout: post
 title: Example content
+excerpt:
+  <h3>Add a Custom Excerpt to Your Post</h3>
+  <p>Find out how!</p>
 ---
 
 
