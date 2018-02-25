@@ -11,6 +11,7 @@ description:         'A collection of personal notes and articles by <a href="ht
 url:                 http://yeshg.github.io
 baseurl:             ''
 paginate:            5
+mathjax: true
 
 # About/contact
 author:
