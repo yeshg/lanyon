@@ -370,6 +370,13 @@ a.sidebar-nav-item:focus {
   color: inherit;
 }
 
+/* tags */
+.post-tags {
+    display: block;
+    margin-top: -.5rem;
+    margin-bottom: .5rem;
+}
+
 
 /*
  * Pagination

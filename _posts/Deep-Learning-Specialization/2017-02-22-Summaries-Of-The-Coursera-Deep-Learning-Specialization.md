@@ -17,14 +17,14 @@ Links to the Posts:
 	- [Shallow Neural Networks]({% post_url /Deep-Learning-Specialization/1-Neural-Networks-and-Deep-Learning/2017-02-23-Shallow-NNs %})
 	- [Deep Neural Networks]({% post_url /Deep-Learning-Specialization/1-Neural-Networks-and-Deep-Learning/2017-02-23-Deep-NNs %})
 2. Improving Deep Neural Networks: Hyperparameter Tuning, Regularization and Optimization
-	- [Deep Learning Workflow](http://)
-	- [Regularization Methods](http://)
-	- [Other Ways to Improve Training](http://)
-	- [Optimization Algorithms](http://)
-	- [Hyperparameter Tuning](http://)
-	- [Batch Normalization](http://)
-	- [Softmax](http://)
-	- [The TensorFlow Deep Learning Framework](http://)
+	- [Deep Learning Workflow]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Deep-Learning-Workflow %})
+	- [Regularization Methods]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Regularization-Methods %})
+	- [Other Ways to Improve Training]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Other-Improve-Training %})
+	- [Optimization Algorithms]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Optimization-Algorithms %})
+	- [Hyperparameter Tuning]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Hyperparameter-Tuning %})
+	- [Batch Normalization]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Batch-Norm %})
+	- [Softmax]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Softmax %})
+	- [The TensorFlow Deep Learning Framework]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-TensorFlow %})
 3. Structuring Machine Learning Projects
 	- [Machine Learning Projects in the Real World](http://)
 4. Convolutional Neural Networks

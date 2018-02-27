@@ -26,4 +26,10 @@
 
   <!-- MathJax -->
   {% include mathjax.html %}
+
+  <!-- Collect Tags -->
+  {% if site.tags != "" %}
+    {% include collecttags.html %}
+  {% endif %}
+
 </head>
