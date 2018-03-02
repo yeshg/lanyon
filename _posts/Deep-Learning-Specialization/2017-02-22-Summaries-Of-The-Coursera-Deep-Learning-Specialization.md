@@ -19,7 +19,7 @@ Links to the Posts:
 2. Improving Deep Neural Networks: Hyperparameter Tuning, Regularization and Optimization
 	- [Deep Learning Workflow]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Deep-Learning-Workflow %})
 	- [Regularization Methods]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Regularization-Methods %})
-	- [Other Ways to Improve Training]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Other-Improve-Training %})
+	- [Normalization, Initializing Weights, Gradient Checking]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Normalization-Initialization-Gradient-Checking %})
 	- [Optimization Algorithms]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Optimization-Algorithms %})
 	- [Hyperparameter Tuning]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Hyperparameter-Tuning %})
 	- [Batch Normalization]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Batch-Norm %})

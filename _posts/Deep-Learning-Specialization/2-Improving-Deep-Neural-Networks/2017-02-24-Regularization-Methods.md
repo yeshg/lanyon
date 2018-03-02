@@ -9,6 +9,7 @@ excerpt:
 
 Regularization is a way to enhance neural networks used to reduce variance, and by extension overfitting. In a nutshell, regularization penalizes the loss function of a neural network to artificially discourage overfitting to the training dataset, such as learning the background noise. Thus, regularization helps models that have poor prediciton and generalization power.
 
+### Standard Regularization
 There are two ways to regularize: using L1 and L2 matrix Norms.
 
 L1 matrix Norm:
@@ -40,3 +41,25 @@ Regularization For NN:
     - `w[l] = (1 - (learninRate*Lmda)/m) w[l] - learninRate*dw[l]`
 - In practice this penalizes large weights and effectively limits the freedom in your model.
 - The new term `(1 - (learninRate*Lmda)/m) w[l]` causes the weight to decay in proportion to its size.
+
+### Dropout Regularization
+Dropout is a really effective, and quite simple way to emphasize generalizations instead of overfitting. While training the neural network, dropout is implemented by randomly keeping neurons active based on some probability hyperparameter.
+
+![](Images/dropout.jpeg)
+
+The image above is from the original paper that proposed dropout, and it illustrates the basic idea. By turning off some neurons during training, the dropout only updates a sample of the full neural network, and the activations for every neuron in the network are forced to be more robust as training goes on. Overfitting is very hard when any number of neurons could be switched off during training.
+
+### Other Regularization Methods
+#### Data Augmentation
+A transformation can be applied to the data, to get more data. For example, in computer vision applications, a rotation or flip could be used to get more data out of the original dataset. In OCR, distorting digits is a common practice.
+Although getting larger datasets this way isn't as good as having actual independent data, it can still be used as a regularization technique.
+
+#### Early stopping
+In early stopping, we plot the training and dev sets cost logs together, and identify the point at which the training data graph and dev data graph are best:
+
+![](Images/early_stopping.png)
+
+This technique isn't recommended, because it changes the ultimate goal from optimzing weights to finding point of best performance on dev and train sets... but its advantage is that it doesn't require yet another hyperparameter to tune like lambda in standard regularization.
+
+#### Model Ensembles
+Model ensembles contain several independent models trained on the same data. At test time, the models' results are averaged and you can get an extra 2% of performance.
