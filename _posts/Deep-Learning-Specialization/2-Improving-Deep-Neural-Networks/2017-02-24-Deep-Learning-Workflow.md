@@ -55,7 +55,14 @@ Many times, we don't have a nice 2D plot to visualize our model's performance. W
 
 ### Basic Recipie for Machine Learning
 - If the model has high bias:
+  - Try to make your NN bigger (Size of Hidden units, Number of layers)
+  - Try a different model that are suitable for your data.
+  - Try to run it longer.
+  - Different optimization algorithm.
 - If the model has high variance:
+  - More data.
+  - Try regularization.
+  - Try a different model that are suitable for your data.
 - You should try the previous two points until you have a low bias / low variance.
 - In the older days before deep learning there was a "Bias / variance trade off". But because now you have more options on solving the bias of variance problem its really helpful to use deep learning.
 - Training a bigger neural network never hurt.
