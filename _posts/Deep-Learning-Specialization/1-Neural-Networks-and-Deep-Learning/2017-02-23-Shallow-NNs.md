@@ -3,6 +3,7 @@ layout: post
 title: Shallow Neural Networks
 tags: Deep-Learning
 mathjax: true
+categories: Deep-Learning
 excerpt:
     <p>Shallow neural networks have one hidden layer. Another way to look at them is a stack of logistic regression objects.</p>
 ---
@@ -11,17 +12,17 @@ Shallow neural networks have one hidden layer. Another way to look at them is a 
 
 
 ### Neural Networks Overview
-In logistic regression we had 
+In logistic regression we had
 
 ```
-X1  \  
+X1  \
 X2   ==>  z = XW + B ==> a = Sigmoid(z) ==> l(a,Y)
 X3  /
 ```
 
 In 1-layer neural networks we have
 ```
-X1  \  
+X1  \
 X2   =>  z1 = XW1 + B1 => a1 = Sigmoid(a1) => z2 = a1W2 + B2 => a2 = Sigmoid(z2) => l(a2,Y)
 X3  /
 ```
@@ -82,7 +83,7 @@ So far, we've been using the sigmoid activation function to squish the outputs o
 3. the exp() computation is a bit expensive to execute.
 
 $$
-\sigma (x) =  \frac{1}{1+ e^{-x} } 
+\sigma (x) =  \frac{1}{1+ e^{-x} }
 $$
 
 ![](Images/sigmoid.jpeg)

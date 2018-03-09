@@ -3,6 +3,7 @@ layout: post
 title: Deep Learning Workflow
 tags: Deep-Learning
 mathjax: true
+categories: Deep-Learning
 excerpt:
     <p>A major part of deep learning is hyperparameter tuning. It's impossible to get all of the hyperparameters on the first run of a model, so in real deep learning projects, there is an iterative loop or workflow before a final system is deployed.</p>
 ---

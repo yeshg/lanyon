@@ -3,6 +3,7 @@ layout: post
 title: Vectorization in NumPy
 tags: Deep-Learning
 mathjax: true
+categories: Deep-Learning
 excerpt:
     <p>Vectorization in Python's NumPy library allows us to eliminate for loops and speed up the computation speed of large matrix manipulation processes.</p>
 ---

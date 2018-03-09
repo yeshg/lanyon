@@ -3,6 +3,7 @@ layout: post
 title: The Basics of Neural Networks
 tags: Deep-Learning
 mathjax: true
+categories: Deep-Learning
 excerpt:
     <p>Neural Networks are the computational models used in machine learning and deep learning. Before building a neural network, we will see binary classification, logistic regression, cost functions, and gradient descent. These are the basic elements that make neural networks possible and effective. </p>
 ---

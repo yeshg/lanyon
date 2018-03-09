@@ -2,6 +2,7 @@
 layout: post
 title: Summaries of the Coursera Deep Learning Courses
 tags: Deep-Learning
+categories: Deep-Learning
 excerpt:
     <p>The <a href="https://www.coursera.org/specializations/deep-learning">Deep Learning Specialization</a> on Coursera is one of the most popular online resources for learning machine learning. After following Andrej Karpathy’s CS231n (another popular course for learning machine learning) and self-studying deep learning from a variety of research papers and websites, I think that Andrew Ng’s Coursera specialization is the most comprehensive and structured way to become a deep learning expert without going to a university. The purpose of the following posts is to summarize the key points of the specialization as an extended guide/cheatsheet for deep learning.</p>
 ---

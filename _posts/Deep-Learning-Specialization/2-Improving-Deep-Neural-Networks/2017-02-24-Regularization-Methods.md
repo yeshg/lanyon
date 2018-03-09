@@ -3,6 +3,7 @@ layout: post
 title: Regularization Methods
 tags: Deep-Learning
 mathjax: true
+categories: Deep-Learning
 excerpt:
     <p>Regularization is a way to enhance neural networks used to reduce variance, and by extension overfitting. In a nutshell, regularization penalizes the loss function of a neural network to artificially discourage overfitting to the training dataset, such as learning the background noise. Thus, regularization helps models that have poor prediciton and generalization power. </p>
 ---

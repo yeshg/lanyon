@@ -1,6 +1,7 @@
 ---
 layout: post
 title: What's Jekyll?
+categories: Misc
 excerpt:
   <h3>Add a Custom Excerpt to Your Post</h3>
   <p>Find out how!</p>

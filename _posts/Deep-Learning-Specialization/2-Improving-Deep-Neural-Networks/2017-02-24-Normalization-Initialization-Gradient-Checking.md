@@ -3,6 +3,7 @@ layout: post
 title: Normalization, Initializing Weights, and Gradient Checking
 tags: Deep-Learning
 mathjax: true
+categories: Deep-Learning
 excerpt:
     <p>This post will discuss some miscellaneous practices in training neural networks, such as normalizing input data, and will also discuss the vanishing/exploding gradient problem and how to solve it with proper weight initialization and gradient checking.</p>
 ---
@@ -62,7 +63,7 @@ There are other ways to solve the exploding and vanishing gradient problems (suc
 Instead of calculating the gradient 'analytically' by solving for the derivative $f'(x)$ of the selected operation $f(x)$, we can check the gradient calculation with a numerical gradient by going back to the definition of the derivative:
 
 $$
-f'(x) =  \lim_{h \rightarrow 0}  \frac{f(x+h)-f(x)}{h} 
+f'(x) =  \lim_{h \rightarrow 0}  \frac{f(x+h)-f(x)}{h}
 $$
 
 In actual code, this check would work as follows:
@@ -80,7 +81,7 @@ for i in len(Ceta):
 Finally, check this formula: `(||d_ceta_calc - d_ceta||) / (||d_ceta_calc||+||d_ceta||)`
 - The `||` is the Euclidean distance:
 $$
-||a,b|| =  \sqrt{ \sum_{i=0}^n (b_{i}^2 - a_{i}^2)^2 } 
+||a,b|| =  \sqrt{ \sum_{i=0}^n (b_{i}^2 - a_{i}^2)^2 }
 $$
 
 #### Some more notes on gradient checking
@@ -90,4 +91,3 @@ Use the gradient check for debugging, so once in a while just to check that calc
 - Remember if you use the normal Regularization to add the value of the additional check to your equation  `(lamda/2m)sum(W[l])`
 - Gradient checking doesn't work with dropout.
 - Run gradient checking at random initialization and train the network for a while maybe there's a bug that are not on the first iteration.
-
