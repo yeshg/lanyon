@@ -3,11 +3,27 @@ layout: default
 title: Home
 ---
 
+<!-- Featured Post -->
+<h1>Featured Post:</h1>
+{% for post in site.categories.Featured %}
+  <div class="post">
+
+    <h2><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h2>
+
+    <div class="entry">
+      {{ post.excerpt }}
+    </div>
+
+    <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
+  </div>
+{% endfor %}
+
+<h1>All Posts:</h1>
 <div class="posts">
   {% for post in site.posts %}
     <div class="post">
 
-      <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+      <h2><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h2>
 
       <div class="entry">
         {{ post.excerpt }}
