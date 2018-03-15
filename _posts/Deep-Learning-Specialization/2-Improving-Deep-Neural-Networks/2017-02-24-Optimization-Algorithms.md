@@ -75,9 +75,9 @@ This image refers to the general equation $V(t) = \beta V_{t-1} + (1-\beta )\the
 ### Momentum Update
 Using a physics based approach, we can skip an intermediate step in vanilla gradient descent.
 
-In th emomentum update, the loss is interpreted as the height of a hilly terrain. With this height, the current position of the weights has a certain potential energe $U = mgh$ (where g is the gravitational constant). The random initialization of weights will be equivalent to starting at some position with zero initial velocity.
+In the momentum update, the loss is interpreted as the height of a hilly terrain. With this height, the current position of the weights has a certain potential energe $U = mgh$ (where g is the gravitational constant). The random initialization of weights will be equivalent to starting at some position with zero initial velocity.
 
-Then, the downward force experienced by a particle at this location is $F = -\deltaU$
+Then, the downward force experienced by a particle at this location is $F = - \nabla U$
 
 ```
 # Momentum update
