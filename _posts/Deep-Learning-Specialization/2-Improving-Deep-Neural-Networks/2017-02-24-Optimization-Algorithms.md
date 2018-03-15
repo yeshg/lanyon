@@ -4,8 +4,12 @@ title: Optimization Algorithms
 tags: Deep-Learning
 mathjax: true
 categories: Deep-Learning
-excerpt:
-    <p>Optimization algorithms are the mathematical techniques to minimize the cost function as quickly and efficiently as possible. There have been several optimization algorithms proposed in the history of deep learning literature.</p>
+excerpt: >-
+  <p>Optimization algorithms are the mathematical techniques to minimize the
+  cost function as quickly and efficiently as possible. There have been several
+  optimization algorithms proposed in the history of deep learning
+  literature.</p>
+published: true
 ---
 
 Optimization algorithms are the mathematical techniques to minimize the cost function as quickly and efficiently as possible. There have been several optimization algorithms proposed in the history of deep learning literature.
@@ -68,3 +72,11 @@ Let's plot the result:
 
 This image refers to the general equation $V(t) = \beta V_{t-1} + (1-\beta )\theta_{t}$ where beta is a hyperparameter.
 
+#### Momentum Update
+Using a physics based approach, we can skip an intermediate step in vanilla gradient descent.
+
+In th emomentum update, the loss is interpreted as the height of a hilly terrain. With this height, the current position of the weights has a certain potential energe $U = mgh$ (where g is the gravitational constant)
+
+
+#### Nesterov Momentum Update
+![](Images/nesterov.jpeg)
