@@ -14,7 +14,7 @@ published: true
 
 Optimization algorithms are the mathematical techniques to minimize the cost function as quickly and efficiently as possible. There have been several optimization algorithms proposed in the history of deep learning literature.
 
-#### Mini-batch Gradient descent
+### Mini-batch Gradient descent
 Training a neural network with a large amount of data is slow (with classical gradient descent), so can split the data into mini-batches. Here, the old and slow form of graident descent is known as *Batch Gradient Descent* (run on the whole dataset) and the faster one is known as *Mini-batch Gradient Descent* (run on the mini-batches).
 
 Mini-batch algorithm pseudo code:
@@ -27,7 +27,7 @@ for t = 1:No_of_batches                                     #This is called on e
 ```
 Although there is a for loop here, the code actually inside the epoch should be vectorized.
 
-#### Understanding Mini-batch Gradient descent
+### Understanding Mini-batch Gradient descent
 The mini-batch gradient descent algorithm's cost vs iterations graph won't have a smooth downward sloping curve like that of batch gradient descent. Instead, the cost will contain several local ups and downs, but a global downward curve:
 
 ![](miniBatch.png)
@@ -44,7 +44,7 @@ Choosing mini-batch size:
     - Make sure mini-batch fits in CPU/GPU
 - Mini batch size is a Hyperparameter.
 
-#### Exponentially Weighted Averages
+### Exponentially Weighted Averages
 Exponentially weighted averages are a fundamental concept for understading the more advanced, faster optimization algorithms.
 
 If we have data like the temperature of day through the year it could be like this:
@@ -72,11 +72,18 @@ Let's plot the result:
 
 This image refers to the general equation $V(t) = \beta V_{t-1} + (1-\beta )\theta_{t}$ where beta is a hyperparameter.
 
-#### Momentum Update
+### Momentum Update
 Using a physics based approach, we can skip an intermediate step in vanilla gradient descent.
 
-In th emomentum update, the loss is interpreted as the height of a hilly terrain. With this height, the current position of the weights has a certain potential energe $U = mgh$ (where g is the gravitational constant)
+In th emomentum update, the loss is interpreted as the height of a hilly terrain. With this height, the current position of the weights has a certain potential energe $U = mgh$ (where g is the gravitational constant). The random initialization of weights will be equivalent to starting at some position with zero initial velocity.
 
+Then, the downward force experienced by a particle at this location is $F = -\deltaU$
 
-#### Nesterov Momentum Update
+```
+# Momentum update
+v = mu * v - learning_rate * dx # integrate velocity
+x += v # integrate position
+```
+
+### Nesterov Momentum Update
 ![](Images/nesterov.jpeg)
