@@ -4,7 +4,7 @@ title: Hyperparameter Tuning
 tags: Deep-Learning
 mathjax: true
 categories: Deep-Learning
-excerpt: <p><Important things to keep in mind when tuning hyperparameters</p>
+excerpt: <p>Important things to keep in mind when tuning hyperparameters</p>
 published: true
 ---
 
