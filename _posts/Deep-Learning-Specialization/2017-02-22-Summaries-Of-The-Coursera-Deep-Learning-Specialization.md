@@ -25,9 +25,8 @@ Links to the Posts:
 	- [Hyperparameter Tuning]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Hyperparameter-Tuning %})
 	- [Batch Normalization]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Batch-Norm %})
 	- [Softmax]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Softmax %})
-	- [The TensorFlow Deep Learning Framework]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-TensorFlow %})
 3. Structuring Machine Learning Projects
-	- [Machine Learning Projects in the Real World](http://)
+	- [Machine Learning Projects in Practice](http://)
 4. Convolutional Neural Networks
 	- [CNN Basics](http://)
 	- [Notable Deep Convolutional Models](http://)
@@ -45,4 +44,4 @@ Links to the Posts:
 	- [Sequence to Sequence Models](http://)
 	- [The Attention Model](http://)
 
-These posts are based off of the notes from [Mahmoud Badry](https://github.com/mbadry1/), blog posts from deep learning researchers like [Christopher Olah](http://colah.github.io/) and [Christ McCormick](http://mccormickml.com/).
+These posts are based off of the notes from [Mahmoud Badry](https://github.com/mbadry1/), blog posts from deep learning researchers like [Christopher Olah](http://colah.github.io/) and [Christ McCormick](http://mccormickml.com/), and the Deep Learning Specialization itself. Some pictures are from Stanford's CS231n course taught by Andrej Karpathy.
