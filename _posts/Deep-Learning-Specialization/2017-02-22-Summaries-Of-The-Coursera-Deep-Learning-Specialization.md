@@ -26,13 +26,13 @@ Links to the Posts:
 	- [Batch Normalization]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Batch-Norm %})
 	- [Softmax]({% post_url /Deep-Learning-Specialization/2-Improving-Deep-Neural-Networks/2017-02-24-Softmax %})
 3. Structuring Machine Learning Projects
-	- [Machine Learning Projects in Practice](http://)
+	- [Machine Learning Projects in Practice]({% post_url /Deep-Learning-Specialization/3-Structuring-Machine-Learning-Projects/2017-02-24-Machine-Learning-Projects-In-Practice %})
 4. Convolutional Neural Networks
-	- [CNN Basics](http://)
-	- [Notable Deep Convolutional Models](http://)
-	- [Object Detection with CNNs](http://)
-	- [Face Recognition with CNNs](http://)
-	- [Neural Style Transfer](http://)
+	- [CNN Basics]({% post_url /Deep-Learning-Specialization/4-Convolutional-Neural-Networks/2017-02-23-CNN-Basics %})
+	- [Notable Deep Convolutional Models]({% post_url /Deep-Learning-Specialization/4-Convolutional-Neural-Networks/2017-02-23-Notable-CNNs %})
+	- [Object Detection with CNNs]({% post_url /Deep-Learning-Specialization/4-Convolutional-Neural-Networks/2017-02-23-Object-Detection-CNNs %})
+	- [Face Recognition with CNNs]({% post_url /Deep-Learning-Specialization/4-Convolutional-Neural-Networks/2017-02-23-Face-Recognition-CNNs %})
+	- [Neural Style Transfer]({% post_url /Deep-Learning-Specialization/4-Convolutional-Neural-Networks/2017-02-23-Neural-Style-Transfer %})
 5. Sequence Models
 	- [Recurrent Neural Networks](http://)
 	- [Long Short Term Memory (LSTM)](http://)
@@ -44,4 +44,4 @@ Links to the Posts:
 	- [Sequence to Sequence Models](http://)
 	- [The Attention Model](http://)
 
-These posts are based off of the notes from [Mahmoud Badry](https://github.com/mbadry1/), blog posts from deep learning researchers like [Christopher Olah](http://colah.github.io/) and [Christ McCormick](http://mccormickml.com/), and the Deep Learning Specialization itself. Some pictures are from Stanford's CS231n course taught by Andrej Karpathy.
+These posts are based off of the notes from [Mahmoud Badry](https://github.com/mbadry1/), blog posts from deep learning researchers like [Christopher Olah](http://colah.github.io/) and [Christ McCormick](http://mccormickml.com/), and the Deep Learning Specialization itself. Some pictures are from Stanford's [CS231n course](http://cs231n.stanford.edu/) taught by [Andrej Karpathy](https://medium.com/@karpathy).
