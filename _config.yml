@@ -5,7 +5,7 @@ permalink:           pretty
 #relative_permalinks: true
 
 # Setup
-title:               YeshG's Technical Blog
+title:               yeshg
 tagline:             'A Technical Blog'
 description:         'A collection of personal notes and articles by <a href="https://www.github.com/yeshg" target="_blank">yeshg</a>.'
 url:                 http://yeshg.github.io

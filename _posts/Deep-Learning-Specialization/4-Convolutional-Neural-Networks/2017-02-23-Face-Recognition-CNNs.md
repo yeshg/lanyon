@@ -1,263 +1,101 @@
 ---
 layout: post
-title: Convolutional Neural Network Basics
+title: Face Recogntion with CNNs
 tags: Deep-Learning
 mathjax: true
 categories: Deep-Learning
-excerpt: <p> Overview of foundational layers of CNNs (convolutions and pooling, how they are stacked). Includes cheat sheet on calculating dimensionality reduction based on hyperparameters of Deep CNN. </p>
+excerpt: <p> Looks at face detection and face recognition, and how CNNs are used to solve both problems, as well as relevant recent research.</p>
 ---
 
-Overview of foundational layers of CNNs (convolutions and pooling, how they are stacked). Includes cheat sheet on calculating dimensionality reduction based
- on hyperparameters of Deep CNN
+Looks at face detection and face recognition, and how CNNs are used to solve both problems, as well as relevant recent research.
 
-### Computer vision
+#### What is face recognition?
 
-- Computer vision is one of the applications that are rapidly active thanks to deep learning.
-- Some of the applications of computer vision that are using deep learning includes:
-  - Self driving cars.
-  - Face recognition.
-- Deep learning is also enabling new types of art to be created.
-- Rapid changes to computer vision are making new applications that weren't possible a few years ago.
-- Computer vision deep leaning techniques are always evolving making a new architectures which can help us in other areas other than computer vision.
-  - For example, Andrew Ng took some ideas of computer vision and applied it in speech recognition.
-- Examples of a computer vision problems includes:
-  - Image classification.
-  - Object detection.
-    - Detect object and localize them.
-  - Neural style transfer
-    - Changes the style of an image using another image.
-- One of the challenges of computer vision problem that images can be so large and we want a fast and accurate algorithm to work with that.
-  - For example, a `1000x1000` image will represent 3 million feature/input to the full connected neural network. If the following hidden layer contains 1000, then we will want to learn weights of the shape `[1000, 3 million]` which is 3 billion parameter only in the first layer and thats so computationally expensive!
-- One of the solutions is to build this using **convolution layers** instead of the **fully connected layers**.
+- Face recognition system identifies a person's face. It can work on both images or videos.
+- **<u>Liveness detection</u>** within a video face recognition system prevents the network from identifying a face in an image. It can be learned by supervised deep learning using a dataset for live human and in-live human and sequence learning.
+- Face verification vs. face recognition:
+  - Verification:
+    - Input: image, name/ID. (1 : 1)
+    - Output: whether the input image is that of the claimed person.
+    - "is this the claimed person?"
+  - Recognition:
+    - Has a database of K persons
+    - Get an input image
+    - Output ID if the image is any of the K persons (or not recognized)
+    - "who is this person?"
+- We can use a face verification system to make a face recognition system. The accuracy of the verification system has to be high (around 99.9% or more) to be use accurately within a recognition system because the recognition system accuracy will be less than the verification system given K persons. 
 
-### Edge detection example
+#### One Shot Learning
 
-- The convolution operation is one of the fundamentals blocks of a CNN. One of the examples about convolution is the image edge detection operation.
-- Early layers of CNN might detect edges then the middle layers will detect parts of objects and the later layers will put the these parts together to produce an output.
-- In an image we can detect vertical edges, horizontal edges, or full edge detector.
-- Vertical edge detection:
-  - An example of convolution operation to detect vertical edges:
-    - ![](Images/01.png)
-  - In the last example a `6x6` matrix convolved with `3x3` filter/kernel gives us a `4x4` matrix.
-  - If you make the convolution operation in TensorFlow you will find the function `tf.nn.conv2d`. In keras you will find `Conv2d` function.
-  - The vertical edge detection filter will find a `3x3` place in an image where there are a bright region followed by a dark region.
-  - If we applied this filter to a white region followed by a dark region, it should find the edges in between the two colors as a positive value. But if we applied the same filter to a dark region followed by a white region it will give us negative values. To solve this we can use the abs function to make it positive.
-- Horizontal edge detection
-  - Filter would be like this
+- One of the face recognition challenges is to solve one shot learning problem.
+- One Shot Learning: A recognition system is able to recognize a person, learning from one image.
+- Historically deep learning doesn't work well with a small number of data.
+- Instead to make this work, we will learn a **similarity function**:
+  - d( **img1**, **img2** ) = degree of difference between images.
+  - We want d result to be low in case of the same faces.
+  - We use tau T as a threshold for d:
+    - If d( **img1**, **img2** ) <= T    Then the faces are the same.
+- Similarity function helps us solving the one shot learning. Also its robust to new inputs.
 
-    ```
-    1	1	1
-    0	0	0
-    -1	-1	-1
-    ```
+#### Siamese Network
 
-- There are a lot of ways we can put number inside the horizontal or vertical edge detections. For example here are the vertical **Sobel** filter (The idea is taking care of the middle row):
+- We will implement the similarity function using a type of NNs called Siamease Network in which we can pass multiple inputs to the two or more networks with the same architecture and parameters.
+- Siamese network architecture are as the following:
+  - ![](Images/35.png)
+  - We make 2 identical conv nets which encodes an input image into a vector. In the above image the vector shape is (128, )
+  - The loss function will be `d(x1, x2) = || f(x1) - f(x2) ||^2`
+  - If `X1`, `X2` are the same person, we want d to be low. If they are different persons, we want d to be high.
+  - [[Taigman et. al., 2014. DeepFace closing the gap to human level performance]](https://www.cv-foundation.org/openaccess/content_cvpr_2014/html/Taigman_DeepFace_Closing_the_2014_CVPR_paper.html)
 
-  ```
-  1	0	-1
-  2	0	-2
-  1	0	-1
-  ```
+#### Triplet Loss
 
-- Also something called **Scharr** filter (The idea is taking great care of the middle row):
+- Triplet Loss is one of the loss functions we can use to solve the similarity distance in a Siamese network.
+- Our learning objective in the triplet loss function is to get the distance between an **Anchor** image and a **positive** or a **negative** image.
+  - Positive means same person, while negative means different person.
+- The triplet name came from that we are comparing an anchor A with a positive P and a negative N image.
+- Formally we want:
+  - Positive distance to be less than negative distance
+  - `||f(A) - f(P)||^2  <= ||f(A) - f(N)||^2`
+  - Then
+  - `||f(A) - f(P)||^2  - ||f(A) - f(N)||^2 <= 0`
+  - To make sure the NN won't get an output of zeros easily:
+  - `||f(A) - f(P)||^2  - ||f(A) - f(N)||^2 <= -alpha`
+    - Alpha is a small number. Sometimes its called the margin.
+  - Then
+  - `||f(A) - f(P)||^2  - ||f(A) - f(N)||^2 + alpha <= 0`
+- Final Loss function:
+  - Given 3 images (A, P, N)
+  - `L(A, P, N) = max (||f(A) - f(P)||^2  - ||f(A) - f(N)||^2 + alpha , 0)`
+  - `J = Sum(L(A[i], P[i], N[i]) , i)` for all triplets of images.
+- You need multiple images of the same person in your dataset. Then get some triplets out of your dataset. Dataset should be big enough.
+- Choosing the triplets A, P, N:
+  - During training if A, P, N are chosen randomly (Subjet to A and P are the same and A and N aren't the same) then one of the problems this constrain is easily satisfied 
+    - `d(A, P) + alpha <= d (A, N)` 
+    - So the NN wont learn much
+  - What we want to do is choose triplets that are **hard** to train on.
+    - So for all the triplets we want this to be satisfied:
+    - `d(A, P) + alpha <= d (A, N)`
+    - This can be achieved by for example same poses!
+    - Find more at the paper.
+- Details are in this paper [[Schroff et al.,2015, FaceNet: A unified embedding for face recognition and clustering]](https://arxiv.org/abs/1503.03832)
+- Commercial recognition systems are trained on a large datasets like 10/100 million images.
+- There are a lot of pretrained models and parameters online for face recognition.
 
-  ```
-  3	0	-3
-  10	0	-10
-  3	0	-3
-  ```
+#### Face Verification and Binary Classification
 
-- What we learned in the deep learning is that we don't need to hand craft these numbers, we can treat them as weights and then learn them. It can learn horizontal, vertical, angled, or any edge type automatically rather than getting them by hand.
-
-### Padding
-
-- In order to to use deep neural networks we really need to use **paddings**.
-- In the last section we saw that a `6x6` matrix convolved with `3x3` filter/kernel gives us a `4x4` matrix.
-- To give it a general rule, if a matrix `nxn` is convolved with `fxf` filter/kernel give us `n-f+1,n-f+1` matrix. 
-- The convolution operation shrinks the matrix if f>1.
-- We want to apply convolution operation multiple times, but if the image shrinks we will lose a lot of data on this process. Also the edges pixels are used less than other pixels in an image.
-- So the problems with convolutions are:
-  - Shrinks output.
-  - throwing away a lot of information that are in the edges.
-- To solve these problems we can pad the input image before convolution by adding some rows and columns to it. We will call the padding amount `P` the number of row/columns that we will insert in top, bottom, left and right of the image.
-- In almost all the cases the padding values are zeros.
-- The general rule now,  if a matrix `nxn` is convolved with `fxf` filter/kernel and padding `p` give us `n+2p-f+1,n+2p-f+1` matrix. 
-- If n = 6, f = 3, and p = 1 Then the output image will have `n+2p-f+1 = 6+2-3+1 = 6`. We maintain the size of the image.
-- Same convolutions is a convolution with a pad so that output size is the same as the input size. Its given by the equation:
-
-  ```
-  P = (f-1) / 2
-  ```
-
-- In computer vision f is usually odd. Some of the reasons is that its have a center value.
-
-### Strided convolution
-
-- Strided convolution is another piece that are used in CNNs.
-
-- We will call stride `S`.
-
-- When we are making the convolution operation we used `S` to tell us the number of pixels we will jump when we are convolving filter/kernel. The last examples we described S was 1.
-
-- Now the general rule are:
-  -  if a matrix `nxn` is convolved with `fxf` filter/kernel and padding `p` and stride `s` it give us `(n+2p-f)/s + 1,(n+2p-f)/s + 1` matrix. 
-
-- In case `(n+2p-f)/s + 1` is fraction we can take **floor** of this value.
-
-- In math textbooks the conv operation is filpping the filter before using it. What we were doing is called cross-correlation operation but the state of art of deep learning is using this as conv operation.
-
-- Same convolutions is a convolution with a padding so that output size is the same as the input size. Its given by the equation:
-
-  ```
-  p = (n*s - n + f - s) / 2
-  When s = 1 ==> P = (f-1) / 2
-  ```
-
-### Convolutions over volumes
-
-- We see how convolution works with 2D images, now lets see if we want to convolve 3D images (RGB image)
-- We will convolve an image of height, width, # of channels with a filter of a height, width, same # of channels. Hint that the image number channels and the filter number of channels are the same.
-- We can call this as stacked filters for each channel!
-- Example:
-  - Input image: `6x6x3`
-  - Filter: `3x3x3`
-  - Result image: `4x4x1`
-  - In the last result p=0, s=1
-- Hint the output here is only 2D.
-- We can use multiple filters to detect multiple features or edges. Example.
-  - Input image: `6x6x3`
-  - 10 Filters: `3x3x3`
-  - Result image: `4x4x10`
-  - In the last result p=0, s=1
-
-### One Layer of a Convolutional Network
-
-- First we convolve some filters to a given input and then add a bias to each filter output and then get RELU of the result. Example:
-  - Input image: `6x6x3`         `# a0`
-  - 10 Filters: `3x3x3`         `#W1`
-  - Result image: `4x4x10`     `#W1a0`
-  - Add b (bias) with `10x1` will get us : `4x4x10` image      `#W1a0 + b`
-  - Apply RELU will get us: `4x4x10` image                `#A1 = RELU(W1a0 + b)`
-  - In the last result p=0, s=1
-  - Hint number of parameters here are: `(3x3x3x10) + 10 = 280`
-- The last example forms a layer in the CNN.
-- Hint: no matter the size of the input, the number of the parameters is same if filter size is same. That makes it less prone to overfitting.
-- Here are some notations we will use. If layer l is a conv layer:
-
-  ```
-  Hyperparameters
-  f[l] = filter size
-  p[l] = padding	# Default is zero
-  s[l] = stride
-  nc[l] = number of filters
-
-  Input:  n[l-1] x n[l-1] x nc[l-1]	Or	 nH[l-1] x nW[l-1] x nc[l-1]
-  Output: n[l] x n[l] x nc[l]	Or	 nH[l] x nW[l] x nc[l]
-  Where n[l] = (n[l-1] + 2p[l] - f[l] / s[l]) + 1
-
-  Each filter is: f[l] x f[l] x nc[l-1]
-
-  Activations: a[l] is nH[l] x nW[l] x nc[l]
-  		     A[l] is m x nH[l] x nW[l] x nc[l]   # In batch or minbatch training
-  		     
-  Weights: f[l] * f[l] * nc[l-1] * nc[l]
-  bias:  (1, 1, 1, nc[l])
-  ```
-
-### A simple convolution network example
-
-- Lets build a big example.
-  - Input Image are:   `a0 = 39x39x3`
-    - `n0 = 39` and `nc0 = 3`
-  - First layer (Conv layer):
-    - `f1 = 3`, `s1 = 1`, and `p1 = 0`
-    - `number of filters = 10`
-    - Then output are `a1 = 37x37x10`
-      - `n1 = 37` and `nc1 = 10`
-  - Second layer (Conv layer):
-    - `f2 = 5`, `s2 = 2`, `p2 = 0`
-    - `number of filters = 20`
-    - The output are `a2 = 17x17x20`
-      - `n2 = 17`, `nc2 = 20`
-    - Hint shrinking goes much faster because the stride is 2
-  - Third layer (Conv layer):
-    - `f3 = 5`, `s3 = 2`, `p2 = 0`
-    - `number of filters = 40`
-    - The output are `a3 = 7x7x40`
-      - `n3 = 7`, `nc3 = 40`
-  - Forth layer (Fully connected Softmax)
-    - `a3 = 7x7x40 = 1960`  as a vector..
-- In the last example you seen that the image are getting smaller after each layer and thats the trend now.
-- Types of layer in a convolutional network:
-  - Convolution. 		`#Conv`
-  - Pooling      `#Pool`
-  - Fully connected     `#FC`
-
-### Pooling layers
-
-- Other than the conv layers, CNNs often uses pooling layers to reduce the size of the inputs, speed up computation, and to make some of the features it detects more robust.
-- Max pooling example:
-  - ![](Images/02.png)
-  - This example has `f = 2`, `s = 2`, and `p = 0` hyperparameters
-- The max pooling is saying, if the feature is detected anywhere in this filter then keep a high number. But the main reason why people are using pooling because its works well in practice and reduce computations.
-- Max pooling has no parameters to learn.
-- Example of Max pooling on 3D input:
-  - Input: `4x4x10`
-  - `Max pooling size = 2` and `stride = 2`
-  - Output: `2x2x10`
-- Average pooling is taking the averages of the values instead of taking the max values.
-- Max pooling is used more often than average pooling in practice.
-- If stride of pooling equals the size, it will then apply the effect of shrinking.
-- Hyperparameters summary
-  - f : filter size.
-  - s : stride.
-  - Padding are rarely uses here.
-  - Max or average pooling.
-
-### Convolutional neural network example
-
-- Now we will deal with a full CNN example. This example is something like the ***LeNet-5*** that was invented by Yann Lecun.
-  - Input Image are:   `a0 = 32x32x3`
-    - `n0 = 32` and `nc0 = 3`
-  - First layer (Conv layer):        `#Conv1`
-    - `f1 = 5`, `s1 = 1`, and `p1 = 0`
-    - `number of filters = 6`
-    - Then output are `a1 = 28x28x6`
-      - `n1 = 28` and `nc1 = 6`
-    - Then apply (Max pooling):         `#Pool1`
-      - `f1p = 2`, and `s1p = 2`
-      - The output are `a1 = 14x14x6`
-  - Second layer (Conv layer):   `#Conv2`
-    - `f2 = 5`, `s2 = 1`, `p2 = 0`
-    - `number of filters = 16`
-    - The output are `a2 = 10x10x16`
-      - `n2 = 10`, `nc2 = 16`
-    - Then apply (Max pooling):         `#Pool2`
-      - `f1p = 2`, and `s1p = 2`
-      - The output are `a2 = 5x5x16`
-  - Third layer (Fully connected)   `#FC3`
-    - Number of neurons are 120
-    - The output `a3 = 120 x 1` . 400 came from `5x5x16`
-  - Forth layer (Fully connected)  `#FC4`
-    - Number of neurons are 84
-    - The output `a4 = 84 x 1` .
-  - Fifth layer (Softmax)
-    - Number of neurons is 10 if we need to identify for example the 10 digits.
-- Hint a Conv1 and Pool1 is treated as one layer.
-- Some statistics about the last example:
-  - ![](Images/03.png)
-- Hyperparameters are a lot. For choosing the value of each you should follow the guideline that we will discuss later or check the literature and takes some ideas and numbers from it.
-- Usually the input size decreases over layers while the number of filters increases.
-- A CNN usually consists of one or more convolution (Not just one as the shown examples) followed by a pooling.
-- Fully connected layers has the most parameters in the network.
-- To consider using these blocks together you should look at other working examples firsts to get some intuitions.
-
-### Why convolutions?
-
-- Two main advantages of Convs are:
-  - Parameter sharing.
-    - A feature detector (such as a vertical edge detector) that's useful in one part of the image is probably useful in another part of the image.
-  - sparsity of connections.
-    - In each layer, each output value depends only on a small number of inputs which makes it translation invariance.
-- Putting it all together:
-  - ![](Images/04.png)
+- Triplet loss is one way to learn the parameters of a conv net for face recognition there's another way to learn these parameters as a straight binary classification problem.
+- Learning the similarity function another way:
+  - ![](Images/36.png)
+  - The final layer is a sigmoid layer.
+  - `Y' = wi * Sigmoid ( f(x(i)) - f(x(j)) ) + b` where the subtraction is the Manhattan distance between f(x(i)) and f(x(j))
+  - Some other similarities can be Euclidean and Ki square similarity.
+  - The NN here is Siamese means the top and bottom convs has the same parameters.
+- The paper for this work: [[Taigman et. al., 2014. DeepFace closing the gap to human level performance]](https://www.cv-foundation.org/openaccess/content_cvpr_2014/html/Taigman_DeepFace_Closing_the_2014_CVPR_paper.html)
+- A good performance/deployment trick:
+  - Pre-compute all the images that you are using as a comparison to the vector f(x(j))
+  - When a new image that needs to be compared, get its vector f(x(i)) then put it with all the pre computed vectors and pass it to the sigmoid function.
+- This version works quite as well as the triplet loss function.
+- Available implementations for face recognition using deep learning includes:
+  - [Openface](https://cmusatyalab.github.io/openface/)
+  - [FaceNet](https://github.com/davidsandberg/facenet)
+  - [DeepFace](https://github.com/RiweiChen/DeepFace)
