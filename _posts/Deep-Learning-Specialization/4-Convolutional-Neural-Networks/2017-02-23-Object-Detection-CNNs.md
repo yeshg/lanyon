@@ -1,263 +1,213 @@
 ---
 layout: post
-title: Convolutional Neural Network Basics
+title: Object Detection with CNNs
 tags: Deep-Learning
 mathjax: true
 categories: Deep-Learning
-excerpt: <p> Overview of foundational layers of CNNs (convolutions and pooling, how they are stacked). Includes cheat sheet on calculating dimensionality reduction based on hyperparameters of Deep CNN. </p>
+excerpt: <p> Reviews different approaches to use CNNs for object detection, and what the latest breakthroughs in relevant research are </p>
 ---
 
-Overview of foundational layers of CNNs (convolutions and pooling, how they are stacked). Includes cheat sheet on calculating dimensionality reduction based
- on hyperparameters of Deep CNN
+### Localization vs Detection
 
-### Computer vision
+Localization is about drawing a bounding box around the class, wheras detection is about simply identifying the class.
 
-- Computer vision is one of the applications that are rapidly active thanks to deep learning.
-- Some of the applications of computer vision that are using deep learning includes:
-  - Self driving cars.
-  - Face recognition.
-- Deep learning is also enabling new types of art to be created.
-- Rapid changes to computer vision are making new applications that weren't possible a few years ago.
-- Computer vision deep leaning techniques are always evolving making a new architectures which can help us in other areas other than computer vision.
-  - For example, Andrew Ng took some ideas of computer vision and applied it in speech recognition.
-- Examples of a computer vision problems includes:
-  - Image classification.
-  - Object detection.
-    - Detect object and localize them.
-  - Neural style transfer
-    - Changes the style of an image using another image.
-- One of the challenges of computer vision problem that images can be so large and we want a fast and accurate algorithm to work with that.
-  - For example, a `1000x1000` image will represent 3 million feature/input to the full connected neural network. If the following hidden layer contains 1000, then we will want to learn weights of the shape `[1000, 3 million]` which is 3 billion parameter only in the first layer and thats so computationally expensive!
-- One of the solutions is to build this using **convolution layers** instead of the **fully connected layers**.
+Object detection can be expanded to the classification and localization of multiple classes in the same image:
+![](Images/ObjectDetection.png)
 
-### Edge detection example
+There's also semantic segmentation:
+![](Images/SemanticSegmentation.png)
 
-- The convolution operation is one of the fundamentals blocks of a CNN. One of the examples about convolution is the image edge detection operation.
-- Early layers of CNN might detect edges then the middle layers will detect parts of objects and the later layers will put the these parts together to produce an output.
-- In an image we can detect vertical edges, horizontal edges, or full edge detector.
-- Vertical edge detection:
-  - An example of convolution operation to detect vertical edges:
-    - ![](Images/01.png)
-  - In the last example a `6x6` matrix convolved with `3x3` filter/kernel gives us a `4x4` matrix.
-  - If you make the convolution operation in TensorFlow you will find the function `tf.nn.conv2d`. In keras you will find `Conv2d` function.
-  - The vertical edge detection filter will find a `3x3` place in an image where there are a bright region followed by a dark region.
-  - If we applied this filter to a white region followed by a dark region, it should find the edges in between the two colors as a positive value. But if we applied the same filter to a dark region followed by a white region it will give us negative values. To solve this we can use the abs function to make it positive.
-- Horizontal edge detection
-  - Filter would be like this
+And instance segmentation:
+![](Images/InstanceSegmentation.png)
 
-    ```
-    1	1	1
-    0	0	0
-    -1	-1	-1
-    ```
+To get the desired output of whatever object detection problem we solve, the solution often involves an output vector rather than a single output number:
+- Example localization problem's output vector:
+```
+Y = [
+  		Pc				# Probability of an object is presented
+  		bx				# Bounding box
+  		by				# Bounding box
+  		bh				# Bounding box
+  		bw				# Bounding box
+  		c1				# The classes
+  		c2
+  		...
+]
+```
 
-- There are a lot of ways we can put number inside the horizontal or vertical edge detections. For example here are the vertical **Sobel** filter (The idea is taking care of the middle row):
+### Sliding Window Detection
+- Decide a rectangle size.
+- Split your image into rectangles of the size you picked. Each region should be covered. You can use some strides.
+- For each rectangle feed the image into the Conv net and decide if its a car or not.
+- Pick larger/smaller rectangles and repeat the process from 2 to 3.
+- Store the rectangles that contains the cars.
+- If two or more rectangles intersects choose the rectangle with the best accuracy.
+Disadvantage of sliding window is the computation time.
+In the era of machine learning before deep learning, people used a hand crafted linear classifiers that classifies the object and then use the sliding window technique. The linear classier make it a cheap computation. But in the deep learning era that is so computational expensive due to the complexity of the deep learning model.
+To solve this problem, we can implement the sliding windows with a Convolutional approach
 
-  ```
-  1	0	-1
-  2	0	-2
-  1	0	-1
-  ```
+### Convolutional Implementation of Sliding Windows
+- Turning FC layer into convolutional layers (predict image class from four classes):
+  - ![](Images/19.png)
+  - As you can see in the above image, we turned the FC layer into a Conv layer using a convolution with the width and height of the filter is the same as the width and height of the input.
+- **Convolution implementation of sliding windows**:
+  - First lets consider that the Conv net you trained is like this (No FC all is conv layers):
+    - ![](Images/20.png)
+  - Say now we have a 16 x 16 x 3 image that we need to apply the sliding windows in. By the normal implementation that have been mentioned in the section before this, we would run this Conv net four times each rectangle size will be 16 x 16.
+  - The convolution implementation will be as follows:
+    - ![](Images/21.png)
+  - Simply we have feed the image into the same Conv net we have trained.
+  - The left cell of the result "The blue one" will represent the the first sliding window of the normal implementation. The other cells will represent the others.
+  - Its more efficient because it now shares the computations of the four times needed.
+  - Another example would be:
+    - ![](Images/22.png)
+  - This example has a total of 16 sliding windows that shares the computation together.
+  - [[Sermanet et al., 2014, OverFeat: Integrated recognition, localization and detection using convolutional networks]](https://arxiv.org/abs/1312.6229)
+- The weakness of the algorithm is that the position of the rectangle wont be so accurate. Maybe none of the rectangles is exactly on the object you want to recognize.
+  - ![](Images/23.png)
+  - In red, the rectangle we want and in blue is the required car rectangle.
 
-- Also something called **Scharr** filter (The idea is taking great care of the middle row):
+### Bounding Box Predictions
 
-  ```
-  3	0	-3
-  10	0	-10
-  3	0	-3
-  ```
+- A better algorithm than the one described in the last section is the [YOLO algorithm](https://arxiv.org/abs/1506.02640).
 
-- What we learned in the deep learning is that we don't need to hand craft these numbers, we can treat them as weights and then learn them. It can learn horizontal, vertical, angled, or any edge type automatically rather than getting them by hand.
+- YOLO stands for *you only look once* and was developed back in 2015.
 
-### Padding
+- Yolo Algorithm:
 
-- In order to to use deep neural networks we really need to use **paddings**.
-- In the last section we saw that a `6x6` matrix convolved with `3x3` filter/kernel gives us a `4x4` matrix.
-- To give it a general rule, if a matrix `nxn` is convolved with `fxf` filter/kernel give us `n-f+1,n-f+1` matrix. 
-- The convolution operation shrinks the matrix if f>1.
-- We want to apply convolution operation multiple times, but if the image shrinks we will lose a lot of data on this process. Also the edges pixels are used less than other pixels in an image.
-- So the problems with convolutions are:
-  - Shrinks output.
-  - throwing away a lot of information that are in the edges.
-- To solve these problems we can pad the input image before convolution by adding some rows and columns to it. We will call the padding amount `P` the number of row/columns that we will insert in top, bottom, left and right of the image.
-- In almost all the cases the padding values are zeros.
-- The general rule now,  if a matrix `nxn` is convolved with `fxf` filter/kernel and padding `p` give us `n+2p-f+1,n+2p-f+1` matrix. 
-- If n = 6, f = 3, and p = 1 Then the output image will have `n+2p-f+1 = 6+2-3+1 = 6`. We maintain the size of the image.
-- Same convolutions is a convolution with a pad so that output size is the same as the input size. Its given by the equation:
+  - ![](Images/24.png)
 
-  ```
-  P = (f-1) / 2
-  ```
+  1. Lets say we have an image of 100 X 100
+  2. Place a  3 x 3 grid on the image. For more smother results you should use 19 x 19 for the 100 x 100
+  3. Apply the classification and localization algorithm we discussed in a previous section to each section of the grid. `bx` and `by` will represent the center point of the object in each grid and will be relative to the box so the range is between 0 and 1 while `bh` and `bw` will represent the height and width of the object which can be greater than 1.0 but still a floating point value.
+  4. Do everything at once with the convolution sliding window. If Y shape is 1 x 8 as we discussed before then the output of the 100 x 100 image should be 3 x 3 x 8 which corresponds to 9 cell results.
+  5. Merging the results using predicted localization mid point.
 
-- In computer vision f is usually odd. Some of the reasons is that its have a center value.
+- We have a problem if we have found more than one object in one grid box.
 
-### Strided convolution
+- One of the best advantages that makes the YOLO algorithm popular is that it has a great speed and a Conv net implementation.
 
-- Strided convolution is another piece that are used in CNNs.
+- How is YOLO different from other Object detectors?  YOLO uses a single CNN
+  network for both classification and localizing the object using bounding boxes.
 
-- We will call stride `S`.
+- In the next sections we will see some ideas that can make the YOLO algorithm better.
 
-- When we are making the convolution operation we used `S` to tell us the number of pixels we will jump when we are convolving filter/kernel. The last examples we described S was 1.
+### Intersection Over Union
 
-- Now the general rule are:
-  -  if a matrix `nxn` is convolved with `fxf` filter/kernel and padding `p` and stride `s` it give us `(n+2p-f)/s + 1,(n+2p-f)/s + 1` matrix. 
+- Intersection Over Union is a function used to evaluate the object detection algorithm.
+- It computes size of intersection and divide it by the union. More generally, *IoU* *is a measure of the overlap between two bounding boxes*.
+- For example:
+  - ![](Images/25.png)
+  - The red is the labeled output and the purple is the predicted output.
+  - To compute Intersection Over Union we first compute the union area of the two rectangles which is "the first rectangle + second rectangle" Then compute the intersection area between these two rectangles.
+  - Finally `IOU = intersection area / Union area`
+- If `IOU >=0.5` then its good. The best answer will be 1.
+- The higher the IOU the better is the accuracy.
 
-- In case `(n+2p-f)/s + 1` is fraction we can take **floor** of this value.
+### Non-max Suppression
 
-- In math textbooks the conv operation is filpping the filter before using it. What we were doing is called cross-correlation operation but the state of art of deep learning is using this as conv operation.
+- One of the problems we have addressed in YOLO is that it can detect an object multiple times.
+- Non-max Suppression is a way to make sure that YOLO detects the object just once.
+- For example:
+  - ![](Images/26.png)
+  - Each car has two or more detections with different probabilities. This came from some of the grids that thinks that this is the center point of the object.
+- Non-max suppression algorithm:
+  1. Lets assume that we are targeting one class as an output class.
+  2. Y shape should be `[Pc, bx, by, bh, hw]` Where Pc is the probability if that object occurs.
+  3. Discard all boxes with `Pc < 0.6`  
+  4. While there are any remaining boxes:
+     1. Pick the box with the largest Pc Output that as a prediction.
+     2. Discard any remaining box with `IoU > 0.5` with that box output in the previous step i.e any box with high overlap(greater than overlap threshold of 0.5).
+- If there are multiple classes/object types `c` you want to detect, you should run the Non-max suppression `c` times, once for every output class.
 
-- Same convolutions is a convolution with a padding so that output size is the same as the input size. Its given by the equation:
+### Anchor Boxes
 
-  ```
-  p = (n*s - n + f - s) / 2
-  When s = 1 ==> P = (f-1) / 2
-  ```
+- In YOLO, a grid only detects one object. What if a grid cell wants to detect multiple object?
+  - ![](Images/27.png)
+  - Car and person grid is same here.
+  - In practice this happens rarely.
+- The idea of Anchor boxes helps us solving this issue.
+- If Y = `[Pc, bx, by, bh, bw, c1, c2, c3]` Then to use two anchor boxes like this:
+  - Y = `[Pc, bx, by, bh, bw, c1, c2, c3, Pc, bx, by, bh, bw, c1, c2, c3]`  We simply have repeated  the one anchor Y.
+  - The two anchor boxes you choose should be known as a shape:
+    - ![](Images/28.png)
+- So Previously, each object in training image is assigned to grid cell that contains that object's midpoint.
+- With two anchor boxes, Each object in training image is assigned to grid cell that contains object's midpoint and anchor box for the grid cell with <u>highest IoU</u>. You have to check where your object should be based on its rectangle closest to which anchor box.
+- Example of data:
+  - ![](Images/29.png)
+  - Where the car was near the anchor 2 than anchor 1.
+- You may have two or more anchor boxes but you should know their shapes.
+  - how do you choose the anchor boxes and people used to just choose them by hand. Maybe five or ten anchor box shapes that spans a variety  of shapes that cover the types of objects you seem to detect frequently.
+  - You may also use a k-means algorithm on your dataset to specify that.
+- Anchor boxes allows your algorithm to specialize, means in our case to easily detect wider images or taller ones.
 
-### Convolutions over volumes
+### YOLO Algorithm
 
-- We see how convolution works with 2D images, now lets see if we want to convolve 3D images (RGB image)
-- We will convolve an image of height, width, # of channels with a filter of a height, width, same # of channels. Hint that the image number channels and the filter number of channels are the same.
-- We can call this as stacked filters for each channel!
-- Example:
-  - Input image: `6x6x3`
-  - Filter: `3x3x3`
-  - Result image: `4x4x1`
-  - In the last result p=0, s=1
-- Hint the output here is only 2D.
-- We can use multiple filters to detect multiple features or edges. Example.
-  - Input image: `6x6x3`
-  - 10 Filters: `3x3x3`
-  - Result image: `4x4x10`
-  - In the last result p=0, s=1
+- YOLO is a state-of-the-art object detection model that is fast and accurate
 
-### One Layer of a Convolutional Network
+- Lets sum up and introduce the whole YOLO algorithm given an example.
 
-- First we convolve some filters to a given input and then add a bias to each filter output and then get RELU of the result. Example:
-  - Input image: `6x6x3`         `# a0`
-  - 10 Filters: `3x3x3`         `#W1`
-  - Result image: `4x4x10`     `#W1a0`
-  - Add b (bias) with `10x1` will get us : `4x4x10` image      `#W1a0 + b`
-  - Apply RELU will get us: `4x4x10` image                `#A1 = RELU(W1a0 + b)`
-  - In the last result p=0, s=1
-  - Hint number of parameters here are: `(3x3x3x10) + 10 = 280`
-- The last example forms a layer in the CNN.
-- Hint: no matter the size of the input, the number of the parameters is same if filter size is same. That makes it less prone to overfitting.
-- Here are some notations we will use. If layer l is a conv layer:
+- Suppose we need to do object detection for our autonomous driver system.It needs to identify three classes:
 
-  ```
-  Hyperparameters
-  f[l] = filter size
-  p[l] = padding	# Default is zero
-  s[l] = stride
-  nc[l] = number of filters
+  1. Pedestrian (Walks on ground).
+  2. Car.
+  3. Motorcycle.
 
-  Input:  n[l-1] x n[l-1] x nc[l-1]	Or	 nH[l-1] x nW[l-1] x nc[l-1]
-  Output: n[l] x n[l] x nc[l]	Or	 nH[l] x nW[l] x nc[l]
-  Where n[l] = (n[l-1] + 2p[l] - f[l] / s[l]) + 1
+- We decided to choose two anchor boxes, a taller one and a wide one.
 
-  Each filter is: f[l] x f[l] x nc[l-1]
+  - Like we said in practice they use five or more anchor boxes hand made or generated using k-means.
 
-  Activations: a[l] is nH[l] x nW[l] x nc[l]
-  		     A[l] is m x nH[l] x nW[l] x nc[l]   # In batch or minbatch training
-  		     
-  Weights: f[l] * f[l] * nc[l-1] * nc[l]
-  bias:  (1, 1, 1, nc[l])
-  ```
+- Our labeled Y shape will be `[Ny, HeightOfGrid, WidthOfGrid, 16]`, where Ny is number of instances and each row (of size 16) is as follows:
 
-### A simple convolution network example
+  - `[Pc, bx, by, bh, bw, c1, c2, c3, Pc, bx, by, bh, bw, c1, c2, c3]`
 
-- Lets build a big example.
-  - Input Image are:   `a0 = 39x39x3`
-    - `n0 = 39` and `nc0 = 3`
-  - First layer (Conv layer):
-    - `f1 = 3`, `s1 = 1`, and `p1 = 0`
-    - `number of filters = 10`
-    - Then output are `a1 = 37x37x10`
-      - `n1 = 37` and `nc1 = 10`
-  - Second layer (Conv layer):
-    - `f2 = 5`, `s2 = 2`, `p2 = 0`
-    - `number of filters = 20`
-    - The output are `a2 = 17x17x20`
-      - `n2 = 17`, `nc2 = 20`
-    - Hint shrinking goes much faster because the stride is 2
-  - Third layer (Conv layer):
-    - `f3 = 5`, `s3 = 2`, `p2 = 0`
-    - `number of filters = 40`
-    - The output are `a3 = 7x7x40`
-      - `n3 = 7`, `nc3 = 40`
-  - Forth layer (Fully connected Softmax)
-    - `a3 = 7x7x40 = 1960`  as a vector..
-- In the last example you seen that the image are getting smaller after each layer and thats the trend now.
-- Types of layer in a convolutional network:
-  - Convolution. 		`#Conv`
-  - Pooling      `#Pool`
-  - Fully connected     `#FC`
+- Your dataset could be an image with a multiple labels and a rectangle for each label, we should go to your dataset and make the shape and values of Y like we agreed.
 
-### Pooling layers
+  - An example:
+    - ![](Images/30.png)
+  - We first initialize all of them to zeros and ?, then for each label and rectangle choose its closest grid point then the shape to fill it and then the best anchor point based on the IOU. so that the shape of Y for one image should be `[HeightOfGrid, WidthOfGrid,16]`
 
-- Other than the conv layers, CNNs often uses pooling layers to reduce the size of the inputs, speed up computation, and to make some of the features it detects more robust.
-- Max pooling example:
-  - ![](Images/02.png)
-  - This example has `f = 2`, `s = 2`, and `p = 0` hyperparameters
-- The max pooling is saying, if the feature is detected anywhere in this filter then keep a high number. But the main reason why people are using pooling because its works well in practice and reduce computations.
-- Max pooling has no parameters to learn.
-- Example of Max pooling on 3D input:
-  - Input: `4x4x10`
-  - `Max pooling size = 2` and `stride = 2`
-  - Output: `2x2x10`
-- Average pooling is taking the averages of the values instead of taking the max values.
-- Max pooling is used more often than average pooling in practice.
-- If stride of pooling equals the size, it will then apply the effect of shrinking.
-- Hyperparameters summary
-  - f : filter size.
-  - s : stride.
-  - Padding are rarely uses here.
-  - Max or average pooling.
+- Train the labeled images on a Conv net. you should receive an output of `[HeightOfGrid, WidthOfGrid,16]` for our case.
 
-### Convolutional neural network example
+- To make predictions, run the Conv net on an image and run Non-max suppression algorithm for each class you have in our case there are 3 classes.
 
-- Now we will deal with a full CNN example. This example is something like the ***LeNet-5*** that was invented by Yann Lecun.
-  - Input Image are:   `a0 = 32x32x3`
-    - `n0 = 32` and `nc0 = 3`
-  - First layer (Conv layer):        `#Conv1`
-    - `f1 = 5`, `s1 = 1`, and `p1 = 0`
-    - `number of filters = 6`
-    - Then output are `a1 = 28x28x6`
-      - `n1 = 28` and `nc1 = 6`
-    - Then apply (Max pooling):         `#Pool1`
-      - `f1p = 2`, and `s1p = 2`
-      - The output are `a1 = 14x14x6`
-  - Second layer (Conv layer):   `#Conv2`
-    - `f2 = 5`, `s2 = 1`, `p2 = 0`
-    - `number of filters = 16`
-    - The output are `a2 = 10x10x16`
-      - `n2 = 10`, `nc2 = 16`
-    - Then apply (Max pooling):         `#Pool2`
-      - `f1p = 2`, and `s1p = 2`
-      - The output are `a2 = 5x5x16`
-  - Third layer (Fully connected)   `#FC3`
-    - Number of neurons are 120
-    - The output `a3 = 120 x 1` . 400 came from `5x5x16`
-  - Forth layer (Fully connected)  `#FC4`
-    - Number of neurons are 84
-    - The output `a4 = 84 x 1` .
-  - Fifth layer (Softmax)
-    - Number of neurons is 10 if we need to identify for example the 10 digits.
-- Hint a Conv1 and Pool1 is treated as one layer.
-- Some statistics about the last example:
-  - ![](Images/03.png)
-- Hyperparameters are a lot. For choosing the value of each you should follow the guideline that we will discuss later or check the literature and takes some ideas and numbers from it.
-- Usually the input size decreases over layers while the number of filters increases.
-- A CNN usually consists of one or more convolution (Not just one as the shown examples) followed by a pooling.
-- Fully connected layers has the most parameters in the network.
-- To consider using these blocks together you should look at other working examples firsts to get some intuitions.
+  - You could get something like that:
+    - ![](Images/31.png)
+    - Total number of generated boxes are grid_width * grid_height * no_of_anchors = 3 x 3 x 2
+  - By removing the low probability predictions you should have:
+    - ![](Images/32.png)
+  - Then get the best probability followed by the IOU filtering:
+    - ![](Images/33.png)
 
-### Why convolutions?
+- YOLO are not good at detecting smaller object.
 
-- Two main advantages of Convs are:
-  - Parameter sharing.
-    - A feature detector (such as a vertical edge detector) that's useful in one part of the image is probably useful in another part of the image.
-  - sparsity of connections.
-    - In each layer, each output value depends only on a small number of inputs which makes it translation invariance.
-- Putting it all together:
-  - ![](Images/04.png)
+- [YOLO9000 Better, faster, stronger](https://arxiv.org/abs/1612.08242
+
+### Region Proposals (R-CNN)
+- R-CNN is not as fast as YOLO, but does not have drawback of wasting computation by processing a lot of areas where no objects are present.
+- R-CNN tries to pick windows with a segmentation algorithm, producing some number of blobs that a conv net runs on top of.
+- There are a lot of improvements and innovations on top of R-CNN approach:
+  - R-CNN:
+    - Propose regions. Classify proposed regions one at a time. Output label + bounding box.
+    - Downside is that its slow.
+    - [[Girshik et. al, 2013. Rich feature hierarchies for accurate object detection and semantic segmentation]](https://arxiv.org/abs/1311.2524)
+  - Fast R-CNN:
+    - Propose regions. Use convolution implementation of sliding windows to classify all the proposed regions.
+    - [[Girshik, 2015. Fast R-CNN]](https://arxiv.org/abs/1504.08083)
+  - Faster R-CNN:
+    - Use convolutional network to propose regions.
+    - [[Ren et. al, 2016. Faster R-CNN: Towards real-time object detection with region proposal networks]](https://arxiv.org/abs/1506.01497)
+  - Mask R-CNN:
+    - https://arxiv.org/abs/1703.06870
+
+- Most of the implementation of faster R-CNN are still slower than YOLO.
+
+- Andew Ng thinks that the idea behind YOLO is better than R-CNN because you are able to do all the things in just one time instead of two times.
+
+- Other algorithms that uses one shot to get the output includes **SSD** and **MultiBox**.
+
+  - [[Wei Liu, et. al 2015 SSD: Single Shot MultiBox Detector]](https://arxiv.org/abs/1512.02325)
+
+- **R-FCN** is similar to Faster R-CNN but more efficient.
+
+  - [[Jifeng Dai, et. al 2016 R-FCN: Object Detection via Region-based Fully Convolutional Networks ]](https://arxiv.org/abs/1605.06409)
