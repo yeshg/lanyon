@@ -1,263 +1,127 @@
 ---
 layout: post
-title: Convolutional Neural Network Basics
+title: Neural Style Transfer
 tags: Deep-Learning
 mathjax: true
 categories: Deep-Learning
-excerpt: <p> Overview of foundational layers of CNNs (convolutions and pooling, how they are stacked). Includes cheat sheet on calculating dimensionality reduction based on hyperparameters of Deep CNN. </p>
+excerpt: <p> How to use gram matrices and convolutional neural networks in an interesting application of machine learning in artwork called Neural Style Transfer. </p>
 ---
+### Neural Style Transfer
 
-Overview of foundational layers of CNNs (convolutions and pooling, how they are stacked). Includes cheat sheet on calculating dimensionality reduction based
- on hyperparameters of Deep CNN
+#### What is neural style transfer?
 
-### Computer vision
+- Neural style transfer is one of the application of Conv nets.
+- Neural style transfer takes a content image `C` and a style image `S` and generates the content image `G` with the style of style image.
+- ![](Images/37.png)
+- In order to implement this you need to look at the features extracted by the Conv net at the shallower and deeper layers.
+- It uses a previously trained convolutional network like VGG, and builds on top of that. The idea of using a network trained on a different task and applying it to a new task is called transfer learning.
 
-- Computer vision is one of the applications that are rapidly active thanks to deep learning.
-- Some of the applications of computer vision that are using deep learning includes:
-  - Self driving cars.
-  - Face recognition.
-- Deep learning is also enabling new types of art to be created.
-- Rapid changes to computer vision are making new applications that weren't possible a few years ago.
-- Computer vision deep leaning techniques are always evolving making a new architectures which can help us in other areas other than computer vision.
-  - For example, Andrew Ng took some ideas of computer vision and applied it in speech recognition.
-- Examples of a computer vision problems includes:
-  - Image classification.
-  - Object detection.
-    - Detect object and localize them.
-  - Neural style transfer
-    - Changes the style of an image using another image.
-- One of the challenges of computer vision problem that images can be so large and we want a fast and accurate algorithm to work with that.
-  - For example, a `1000x1000` image will represent 3 million feature/input to the full connected neural network. If the following hidden layer contains 1000, then we will want to learn weights of the shape `[1000, 3 million]` which is 3 billion parameter only in the first layer and thats so computationally expensive!
-- One of the solutions is to build this using **convolution layers** instead of the **fully connected layers**.
+#### What are deep ConvNets learning?
 
-### Edge detection example
+- Visualizing what a deep network is learning:
+  - Given this AlexNet like Conv net:
+    - ![](Images/38.png)
+  - Pick a unit in layer l. Find the nine image patches that maximize the unit's activation. 
+    - Notice that a hidden unit in layer one will see relatively small portion of NN, so if you plotted it it will match a small image in the shallower layers while it will get larger image in deeper layers.
+  - Repeat for other units and layers.
+  - It turns out that layer 1 are learning the low level representations like colors and edges.
+- You will find out that each layer are learning more complex representations.
+  - ![](Images/39.png)
+- The first layer was created using the weights of the first layer. Other images are generated using the receptive field in the image that triggered the neuron to be max.
+- [[Zeiler and Fergus., 2013, Visualizing and understanding convolutional networks]](https://arxiv.org/abs/1311.2901)
+- A good explanation on how to get **receptive field** given a layer:
+  - ![](Images/receptiveField.png)
+  - From [A guide to receptive field arithmetic for Convolutional Neural Networks](https://medium.com/@nikasa1889/a-guide-to-receptive-field-arithmetic-for-convolutional-neural-networks-e0f514068807)
 
-- The convolution operation is one of the fundamentals blocks of a CNN. One of the examples about convolution is the image edge detection operation.
-- Early layers of CNN might detect edges then the middle layers will detect parts of objects and the later layers will put the these parts together to produce an output.
-- In an image we can detect vertical edges, horizontal edges, or full edge detector.
-- Vertical edge detection:
-  - An example of convolution operation to detect vertical edges:
-    - ![](Images/01.png)
-  - In the last example a `6x6` matrix convolved with `3x3` filter/kernel gives us a `4x4` matrix.
-  - If you make the convolution operation in TensorFlow you will find the function `tf.nn.conv2d`. In keras you will find `Conv2d` function.
-  - The vertical edge detection filter will find a `3x3` place in an image where there are a bright region followed by a dark region.
-  - If we applied this filter to a white region followed by a dark region, it should find the edges in between the two colors as a positive value. But if we applied the same filter to a dark region followed by a white region it will give us negative values. To solve this we can use the abs function to make it positive.
-- Horizontal edge detection
-  - Filter would be like this
+#### Cost Function
 
-    ```
-    1	1	1
-    0	0	0
-    -1	-1	-1
-    ```
+- We will define a cost function for the generated image that measures how good it is.
+- Give a content image C, a style image S, and a generated image G:
+  - `J(G) = alpha * J(C,G) + beta * J(S,G)`
+  - `J(C, G)` measures how similar is the generated image to the Content image.
+  - `J(S, G)` measures how similar is the generated image to the Style image.
+  - alpha and beta are relative weighting to the similarity and these are hyperparameters.
+- Find the generated image G:
+  1. Initiate G randomly
+     - For example G: 100 X 100 X 3
+  2. Use gradient descent to minimize `J(G)`
+     - `G = G - dG`  We compute the gradient image and use gradient decent to minimize the cost function.
+- The iterations might be as following image:
+  - To Generate this:
+    - ![](Images/40.png)
+  - You will go through this:
+    - ![](Images/41.png)
 
-- There are a lot of ways we can put number inside the horizontal or vertical edge detections. For example here are the vertical **Sobel** filter (The idea is taking care of the middle row):
+#### Content Cost Function
 
-  ```
-  1	0	-1
-  2	0	-2
-  1	0	-1
-  ```
+- In the previous section we showed that we need a cost function for the content image and the style image to measure how similar is them to each other.
+- Say you use hidden layer `l` to compute content cost. 
+  - If we choose `l` to be small (like layer 1), we will force the network to get similar output to the original content image.
+  - In practice `l` is not too shallow and not too deep but in the middle.
+- Use pre-trained ConvNet. (E.g., VGG network)
+- Let `a(c)[l]` and `a(G)[l]` be the activation of layer `l` on the images.
+- If `a(c)[l]` and `a(G)[l]` are similar then they will have the same content
+  - `J(C, G) at a layer l = 1/2 || a(c)[l] - a(G)[l] ||^2`
 
-- Also something called **Scharr** filter (The idea is taking great care of the middle row):
+#### Style Cost Function
 
-  ```
-  3	0	-3
-  10	0	-10
-  3	0	-3
-  ```
+- Meaning of the ***style*** of an image:
+  - Say you are using layer l's activation to measure ***style***.
+  - Define style as correlation between **activations** across **channels**. 
+    - That means given an activation like this:
+      - ![](Images/42.png)
+    - How correlate is the orange channel with the yellow channel?
+    - Correlated means if a value appeared in a specific channel a specific value will appear too (Depends on each other).
+    - Uncorrelated means if a value appeared in a specific channel doesn't mean that another value will appear (Not depend on each other)
+  - The correlation tells you how a components might occur or not occur together in the same image.
+- The correlation of style image channels should appear in the generated image channels.
+- Style matrix (Gram matrix):
+  - Let `a(l)[i, j, k]` be the activation at l with `(i=H, j=W, k=C)`
+  - Also `G(l)(s)` is matrix of shape `nc(l) x nc(l)`
+    - We call this matrix style matrix or Gram matrix.
+    - In this matrix each cell will tell us how correlated is a channel to another channel.
+  - To populate the matrix we use these equations to compute style matrix of the style image and the generated image.
+    - ![](Images/43.png)
+    - As it appears its the sum of the multiplication of each member in the matrix.
+- To compute gram matrix efficiently:
+  - Reshape activation from H X W X C to HW X C
+  - Name the reshaped activation F.
+  - `G[l] = F * F.T`
+- Finally the cost function will be as following:
+  - `J(S, G) at layer l = (1/ 2 * H * W * C) || G(l)(s) - G(l)(G) ||`
+- And if you have used it from some layers
+  - `J(S, G) = Sum (lamda[l]*J(S, G)[l], for all layers)`
+- Steps to be made if you want to create a tensorflow model for neural style transfer:
+  1. Create an Interactive Session.
+  2. Load the content image.
+  3. Load the style image
+  4. Randomly initialize the image to be generated
+  5. Load the VGG16 model
+  6. Build the TensorFlow graph:
+     - Run the content image through the VGG16 model and compute the content cost
+     - Run the style image through the VGG16 model and compute the style cost
+     - Compute the total cost
+     - Define the optimizer and the learning rate
+  7. Initialize the TensorFlow graph and run it for a large number of iterations, updating the generated image at every step.
 
-- What we learned in the deep learning is that we don't need to hand craft these numbers, we can treat them as weights and then learn them. It can learn horizontal, vertical, angled, or any edge type automatically rather than getting them by hand.
+#### 1D and 3D Generalizations
 
-### Padding
-
-- In order to to use deep neural networks we really need to use **paddings**.
-- In the last section we saw that a `6x6` matrix convolved with `3x3` filter/kernel gives us a `4x4` matrix.
-- To give it a general rule, if a matrix `nxn` is convolved with `fxf` filter/kernel give us `n-f+1,n-f+1` matrix. 
-- The convolution operation shrinks the matrix if f>1.
-- We want to apply convolution operation multiple times, but if the image shrinks we will lose a lot of data on this process. Also the edges pixels are used less than other pixels in an image.
-- So the problems with convolutions are:
-  - Shrinks output.
-  - throwing away a lot of information that are in the edges.
-- To solve these problems we can pad the input image before convolution by adding some rows and columns to it. We will call the padding amount `P` the number of row/columns that we will insert in top, bottom, left and right of the image.
-- In almost all the cases the padding values are zeros.
-- The general rule now,  if a matrix `nxn` is convolved with `fxf` filter/kernel and padding `p` give us `n+2p-f+1,n+2p-f+1` matrix. 
-- If n = 6, f = 3, and p = 1 Then the output image will have `n+2p-f+1 = 6+2-3+1 = 6`. We maintain the size of the image.
-- Same convolutions is a convolution with a pad so that output size is the same as the input size. Its given by the equation:
-
-  ```
-  P = (f-1) / 2
-  ```
-
-- In computer vision f is usually odd. Some of the reasons is that its have a center value.
-
-### Strided convolution
-
-- Strided convolution is another piece that are used in CNNs.
-
-- We will call stride `S`.
-
-- When we are making the convolution operation we used `S` to tell us the number of pixels we will jump when we are convolving filter/kernel. The last examples we described S was 1.
-
-- Now the general rule are:
-  -  if a matrix `nxn` is convolved with `fxf` filter/kernel and padding `p` and stride `s` it give us `(n+2p-f)/s + 1,(n+2p-f)/s + 1` matrix. 
-
-- In case `(n+2p-f)/s + 1` is fraction we can take **floor** of this value.
-
-- In math textbooks the conv operation is filpping the filter before using it. What we were doing is called cross-correlation operation but the state of art of deep learning is using this as conv operation.
-
-- Same convolutions is a convolution with a padding so that output size is the same as the input size. Its given by the equation:
-
-  ```
-  p = (n*s - n + f - s) / 2
-  When s = 1 ==> P = (f-1) / 2
-  ```
-
-### Convolutions over volumes
-
-- We see how convolution works with 2D images, now lets see if we want to convolve 3D images (RGB image)
-- We will convolve an image of height, width, # of channels with a filter of a height, width, same # of channels. Hint that the image number channels and the filter number of channels are the same.
-- We can call this as stacked filters for each channel!
-- Example:
-  - Input image: `6x6x3`
-  - Filter: `3x3x3`
-  - Result image: `4x4x1`
-  - In the last result p=0, s=1
-- Hint the output here is only 2D.
-- We can use multiple filters to detect multiple features or edges. Example.
-  - Input image: `6x6x3`
-  - 10 Filters: `3x3x3`
-  - Result image: `4x4x10`
-  - In the last result p=0, s=1
-
-### One Layer of a Convolutional Network
-
-- First we convolve some filters to a given input and then add a bias to each filter output and then get RELU of the result. Example:
-  - Input image: `6x6x3`         `# a0`
-  - 10 Filters: `3x3x3`         `#W1`
-  - Result image: `4x4x10`     `#W1a0`
-  - Add b (bias) with `10x1` will get us : `4x4x10` image      `#W1a0 + b`
-  - Apply RELU will get us: `4x4x10` image                `#A1 = RELU(W1a0 + b)`
-  - In the last result p=0, s=1
-  - Hint number of parameters here are: `(3x3x3x10) + 10 = 280`
-- The last example forms a layer in the CNN.
-- Hint: no matter the size of the input, the number of the parameters is same if filter size is same. That makes it less prone to overfitting.
-- Here are some notations we will use. If layer l is a conv layer:
-
-  ```
-  Hyperparameters
-  f[l] = filter size
-  p[l] = padding	# Default is zero
-  s[l] = stride
-  nc[l] = number of filters
-
-  Input:  n[l-1] x n[l-1] x nc[l-1]	Or	 nH[l-1] x nW[l-1] x nc[l-1]
-  Output: n[l] x n[l] x nc[l]	Or	 nH[l] x nW[l] x nc[l]
-  Where n[l] = (n[l-1] + 2p[l] - f[l] / s[l]) + 1
-
-  Each filter is: f[l] x f[l] x nc[l-1]
-
-  Activations: a[l] is nH[l] x nW[l] x nc[l]
-  		     A[l] is m x nH[l] x nW[l] x nc[l]   # In batch or minbatch training
-  		     
-  Weights: f[l] * f[l] * nc[l-1] * nc[l]
-  bias:  (1, 1, 1, nc[l])
-  ```
-
-### A simple convolution network example
-
-- Lets build a big example.
-  - Input Image are:   `a0 = 39x39x3`
-    - `n0 = 39` and `nc0 = 3`
-  - First layer (Conv layer):
-    - `f1 = 3`, `s1 = 1`, and `p1 = 0`
-    - `number of filters = 10`
-    - Then output are `a1 = 37x37x10`
-      - `n1 = 37` and `nc1 = 10`
-  - Second layer (Conv layer):
-    - `f2 = 5`, `s2 = 2`, `p2 = 0`
-    - `number of filters = 20`
-    - The output are `a2 = 17x17x20`
-      - `n2 = 17`, `nc2 = 20`
-    - Hint shrinking goes much faster because the stride is 2
-  - Third layer (Conv layer):
-    - `f3 = 5`, `s3 = 2`, `p2 = 0`
-    - `number of filters = 40`
-    - The output are `a3 = 7x7x40`
-      - `n3 = 7`, `nc3 = 40`
-  - Forth layer (Fully connected Softmax)
-    - `a3 = 7x7x40 = 1960`  as a vector..
-- In the last example you seen that the image are getting smaller after each layer and thats the trend now.
-- Types of layer in a convolutional network:
-  - Convolution. 		`#Conv`
-  - Pooling      `#Pool`
-  - Fully connected     `#FC`
-
-### Pooling layers
-
-- Other than the conv layers, CNNs often uses pooling layers to reduce the size of the inputs, speed up computation, and to make some of the features it detects more robust.
-- Max pooling example:
-  - ![](Images/02.png)
-  - This example has `f = 2`, `s = 2`, and `p = 0` hyperparameters
-- The max pooling is saying, if the feature is detected anywhere in this filter then keep a high number. But the main reason why people are using pooling because its works well in practice and reduce computations.
-- Max pooling has no parameters to learn.
-- Example of Max pooling on 3D input:
-  - Input: `4x4x10`
-  - `Max pooling size = 2` and `stride = 2`
-  - Output: `2x2x10`
-- Average pooling is taking the averages of the values instead of taking the max values.
-- Max pooling is used more often than average pooling in practice.
-- If stride of pooling equals the size, it will then apply the effect of shrinking.
-- Hyperparameters summary
-  - f : filter size.
-  - s : stride.
-  - Padding are rarely uses here.
-  - Max or average pooling.
-
-### Convolutional neural network example
-
-- Now we will deal with a full CNN example. This example is something like the ***LeNet-5*** that was invented by Yann Lecun.
-  - Input Image are:   `a0 = 32x32x3`
-    - `n0 = 32` and `nc0 = 3`
-  - First layer (Conv layer):        `#Conv1`
-    - `f1 = 5`, `s1 = 1`, and `p1 = 0`
-    - `number of filters = 6`
-    - Then output are `a1 = 28x28x6`
-      - `n1 = 28` and `nc1 = 6`
-    - Then apply (Max pooling):         `#Pool1`
-      - `f1p = 2`, and `s1p = 2`
-      - The output are `a1 = 14x14x6`
-  - Second layer (Conv layer):   `#Conv2`
-    - `f2 = 5`, `s2 = 1`, `p2 = 0`
-    - `number of filters = 16`
-    - The output are `a2 = 10x10x16`
-      - `n2 = 10`, `nc2 = 16`
-    - Then apply (Max pooling):         `#Pool2`
-      - `f1p = 2`, and `s1p = 2`
-      - The output are `a2 = 5x5x16`
-  - Third layer (Fully connected)   `#FC3`
-    - Number of neurons are 120
-    - The output `a3 = 120 x 1` . 400 came from `5x5x16`
-  - Forth layer (Fully connected)  `#FC4`
-    - Number of neurons are 84
-    - The output `a4 = 84 x 1` .
-  - Fifth layer (Softmax)
-    - Number of neurons is 10 if we need to identify for example the 10 digits.
-- Hint a Conv1 and Pool1 is treated as one layer.
-- Some statistics about the last example:
-  - ![](Images/03.png)
-- Hyperparameters are a lot. For choosing the value of each you should follow the guideline that we will discuss later or check the literature and takes some ideas and numbers from it.
-- Usually the input size decreases over layers while the number of filters increases.
-- A CNN usually consists of one or more convolution (Not just one as the shown examples) followed by a pooling.
-- Fully connected layers has the most parameters in the network.
-- To consider using these blocks together you should look at other working examples firsts to get some intuitions.
-
-### Why convolutions?
-
-- Two main advantages of Convs are:
-  - Parameter sharing.
-    - A feature detector (such as a vertical edge detector) that's useful in one part of the image is probably useful in another part of the image.
-  - sparsity of connections.
-    - In each layer, each output value depends only on a small number of inputs which makes it translation invariance.
-- Putting it all together:
-  - ![](Images/04.png)
+- So far we have used the Conv nets for images which are 2D.
+- Conv nets can work with 1D and 3D data as well.
+- An example of 1D convolution:
+  - Input shape (14, 1)
+  - Applying 16 filters with F = 5 , S = 1
+  - Output shape will be 10 X 16
+  - Applying 32 filters with F = 5, S = 1
+  - Output shape will be 6 X 32
+- The general equation `(N - F)/S + 1` can be applied here but here it gives a vector rather than a 2D matrix.
+- 1D data comes from a lot of resources such as waves, sounds, heartbeat signals. 
+- In most of the applications that uses 1D data we use Recurrent Neural Network RNN.
+- 3D data also are available in some applications like CT scan:
+  - ![](Images/44.png)
+- Example of 3D convolution:
+  - Input shape (14, 14,14, 1)
+  - Applying 16 filters with F = 5 , S = 1
+  - Output shape (10, 10, 10, 16)
+  - Applying 32 filters with F = 5, S = 1
+  - Output shape will be (6, 6, 6, 32)
